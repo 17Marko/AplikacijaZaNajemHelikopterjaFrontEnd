@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Angular QuickStart</title>
+    <base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Polyfill(s) for older browsers -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+
+    <script src="systemjs.config.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.js"></script>
+
+	<script>		
+		var app = angular.module('myApp', []);
+		
+		app.controller('helikopterController', function($scope, $http) {
+			
+			$scope.helikopterji = [];
+            $scope.helikopter = {
+                id : -1,
+				sifra: "",
+                imeHelikopterja : "",
+                status : ""
+            };
+			
+			prikaziSeznamHelikopterjev();
+			prikaziPodatkeHelikopterjev();
+			
+			//prikaz seznama helikopterjev						
+			function prikaziSeznamHelikopterjev() {
+			  $http({
+				method : "GET",
+				url : "http://localhost:8080/helikopterList"
+			  }).then(function mySuccess(response) {
+				  $scope.helikopters = response.data;
+				}, function myError(response) {
+				  $scope.helikopters = response.statusText;
+			  });
+			} 
+		  
+			//prikaz vnesenih podatkov
+			function prikaziPodatkeHelikopterjev() {
+			  $scope.master = {};
+
+			  $scope.update = function(helikopter) {
+				$scope.master = angular.copy(helikopter);
+			  };
+
+			  $scope.reset = function() {
+				$scope.helikopter = angular.copy($scope.master);
+			  };
+
+			  $scope.reset();	
+			}
+			
+			$scope.submitHelikopter = function(helikopter) {        
+				$http({
+					method : "POST",
+					url : "http://localhost:8080/dodajHelikopter",
+					data : angular.toJson($scope.helikopter),
+					headers : {
+						'Content-Type' : 'application/json'
+					}
+				}).then( _success, _error );
+			};
+			
+			$scope.deleteHelikopter = function(helikopter) {								
+				console.log(helikopter.id);
+				$http({
+					method : "DELETE",
+					url : "http://localhost:8080/brisiHelikopter/" + helikopter.id	
+				}).then(_success, _error);
+			};
+			
+			function _success(response) {
+                prikaziSeznamHelikopterjev();
+                clearFormData();
+            }
+         
+            function _error(response) {
+                console.log(response.statusText);
+            }
+			
+			//Clear the form
+            function clearFormData() {
+                $scope.helikopter.sifra = "";
+                $scope.helikopter.imeHelikopterja = "";
+                $scope.helikopter.status = "";
+            };
+			
+			$scope.reset = function() {
+				clearFormData();
+			}
+		});
+    </script>
+  </head>
+
+	<body ng-app="myApp" ng-controller="helikopterController">
+		<form novalidate class="simple-form" ng-submit="submitHelikopter()">
+			<label class="label">Šifra: </label> <input type="text" ng-model="helikopter.sifra"></label><br><br>
+			<label class="label">Ime helikopterja: </label> <input type="text" ng-model="helikopter.imeHelikopterja"></label><br><br>
+			<label class="label">Status : </label> <input type="text" ng-model="helikopter.status"></label><br><br>
+			<button type="submit" ng-click="update(helikopter)" value="Dodaj">Dodaj</button> <br><br>
+			<input type="button" ng-click="reset()" value="Reset" />
+		</form>
+		<pre>helikopter = {{helikopter | json}}</pre>
+		<pre>master = {{master | json}}</pre>
+		<table ng-show="helikopters.length">
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Šifra</th>
+					<th>Ime helikopterja</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="helikopter in helikopters">
+					<td>{{helikopter.id}}</td>
+					<td>{{helikopter.sifra}}</td>
+					<td>{{helikopter.imeHelikopterja}}</td>
+					<td>{{helikopter.status}}</td>
+					<td><input type="checkbox" id="najeto" name="najeto" value="Najeto">
+					<label for="najeto">Najeto</label></td>
+					<td><a ng-click="deleteHelikopter(helikopter)" class="red-button">Delete</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+</html>
