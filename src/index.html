@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Angular QuickStart</title>
+    <title>Aplikacija za najem helikopterja</title>
     <base href="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -102,6 +102,8 @@
   </head>
 
 	<body ng-app="myApp" ng-controller="helikopterController">
+		<h1>Aplikacija za najem helikopterja</h1>
+		<strong>Vnesite podatke o helikopterju</strong>
 		<form novalidate class="simple-form" ng-submit="submitHelikopter()">
 			<label class="label">Šifra: </label> <input type="text" ng-model="helikopter.sifra"></label><br><br>
 			<label class="label">Ime helikopterja: </label> <input type="text" ng-model="helikopter.imeHelikopterja"></label><br><br>
@@ -111,6 +113,7 @@
 		</form>
 		<pre>helikopter = {{helikopter | json}}</pre>
 		<pre>master = {{master | json}}</pre>
+		<strong>Seznam helikopterjev</strong>
 		<table ng-show="helikopters.length">
 			<thead>
 				<tr>
