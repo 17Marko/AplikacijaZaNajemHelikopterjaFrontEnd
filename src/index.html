@@ -78,6 +78,15 @@
 				}).then(_success, _error);
 			};
 			
+			$scope.checkboxEl = false;
+			$scope.najeto = function(checkboxEl, helikopter) {
+				if (checkboxEl) {
+				   helikopter.status = "zasedeno";			
+				} else {
+				   helikopter.status = "prost";
+				}
+			};
+			
 			function _success(response) {
                 prikaziSeznamHelikopterjev();
                 clearFormData();
@@ -129,7 +138,7 @@
 					<td>{{helikopter.sifra}}</td>
 					<td>{{helikopter.imeHelikopterja}}</td>
 					<td>{{helikopter.status}}</td>
-					<td><input type="checkbox" id="najeto" name="najeto" value="Najeto">
+					<td><input type="checkbox" value="1" ng-model="checkboxEl" ng-change="najeto(checkboxEl, helikopter)" ng-click="najeto(checkboxEl, helikopter)">
 					<label for="najeto">Najeto</label></td>
 					<td><a ng-click="deleteHelikopter(helikopter)" class="red-button">Delete</a></td>
 				</tr>
